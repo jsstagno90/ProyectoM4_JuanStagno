@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import { useTasks } from "../hooks/useTasks";
+import type { Timestamp } from "firebase/firestore";
+
 
 function Tasks() {
   const [query, setQuery] = useState("");
@@ -28,12 +30,14 @@ function Tasks() {
       })
       : [...tasks];
 
-    const getTime = (taskDate: any) => {
+    const getTime = (taskDate: Timestamp | Date | null | undefined) => {
       if (!taskDate) return 0;
-      if (typeof taskDate.toDate === "function") {
-        return taskDate.toDate().getTime();
+
+      if (taskDate instanceof Date) {
+        return taskDate.getTime();
       }
-      return taskDate instanceof Date ? taskDate.getTime() : 0;
+
+      return taskDate.toDate().getTime();
     };
 
     return filtered.sort((a, b) => {
