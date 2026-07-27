@@ -6,6 +6,9 @@ import {
   query,
   where,
   orderBy,
+  deleteDoc,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import type { NewTask, Task } from "../types/task";
@@ -46,4 +49,24 @@ export async function getTasks(): Promise<Task[]> {
     id: doc.id,
     ...(doc.data() as Omit<Task, "id">),
   }));
+}
+
+export async function deleteTask(taskId: string) {
+  await deleteDoc(doc(db, "tasks", taskId));
+}
+
+export async function toggleTaskCompleted(
+  taskId: string,
+  completed: boolean
+) {
+  await updateDoc(doc(db, "tasks", taskId), {
+    completed: !completed,
+  });
+}
+
+export async function updateTask(
+  taskId: string,
+  updatedData: Partial<Task>
+) {
+  await updateDoc(doc(db, "tasks", taskId), updatedData);
 }
