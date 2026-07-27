@@ -1,75 +1,173 @@
-# React + TypeScript + Vite
+# 📋 Gestor de Tareas
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Proyecto Integrador desarrollado para SoyHenry utilizando React, TypeScript y Firebase.
 
-Currently, two official plugins are available:
+La aplicación permite que cada usuario pueda registrarse, iniciar sesión y administrar sus propias tareas mediante autenticación y almacenamiento en la nube.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Deploy:** *(Agregar enlace de Vercel)*
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Funcionalidades
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 🔐 Registro e inicio de sesión con Firebase Authentication
+- 📝 Crear tareas
+- ✏️ Editar tareas
+- ✅ Marcar tareas como completadas
+- 🔄 Volver una tarea a pendiente
+- 🗑️ Eliminar tareas
+- 🔍 Buscar tareas por título o descripción
+- 📅 Ordenar tareas por:
+  - Más recientes
+  - Más antiguas
+  - Completadas
+  - Pendientes
+- 📱 Diseño responsive
+- 🎨 Animaciones para mejorar la experiencia de usuario
+- 🔒 Rutas protegidas
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Tecnologías
 
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- CSS
+
+### Backend
+
+- Firebase Authentication
+- Cloud Firestore
+
+### Testing
+
+- Vitest
+- React Testing Library
+
+### Herramientas
+
+- ESLint
+- Git
+- GitHub
+- Vercel
+
+---
+
+## 📂 Estructura del proyecto
+
+```text
+src/
+├── assets/
+├── components/
+├── context/
+├── hooks/
+├── pages/
+├── routes/
+├── services/
+├── types/
+└── utils/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ Instalación
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Clonar el repositorio
 
+```bash
+git clone https://github.com/jsstagno90/ProyectoM4_JuanStagno.git
 ```
+
+Entrar al proyecto
+
+```bash
+cd ProyectoM4_JuanStagno
+```
+
+Instalar dependencias
+
+```bash
+npm install
+```
+
+Crear un archivo `.env`
+
+```env
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
+Iniciar la aplicación
+
+```bash
+npm run dev
+```
+
+---
+
+## 🧪 Scripts
+
+Ejecutar la aplicación
+
+```bash
+npm run dev
+```
+
+Ejecutar los tests
+
+```bash
+npm run test:run
+```
+
+Construir la aplicación
+
+```bash
+npm run build
+```
+
+Analizar el código
+
+```bash
+npm run lint
+```
+
+---
+
+## 📚 Conceptos aplicados
+
+- React Hooks
+- Componentes reutilizables
+- TypeScript
+- CRUD
+- Firebase Authentication
+- Cloud Firestore
+- React Router
+- Protected Routes
+- Testing con Vitest
+- React Testing Library
+
+---
+
+## 👨‍💻 Autor
+
+**Juan Stagno**
+
+- GitHub: https://github.com/jsstagno90
+- LinkedIn: https://www.linkedin.com/in/juan-stagno/
+
+---
+
+## 📄 Licencia
+
+Proyecto desarrollado con fines educativos como Proyecto Integrador de SoyHenry.
