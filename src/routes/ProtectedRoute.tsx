@@ -9,10 +9,8 @@ interface Props {
 
 export function ProtectedRoute({ children }: Props) {
   const { user, loading } = useAuth();
-  
-  console.log("loading:", loading);
-  console.log("user:", user);
-if (loading) {
+
+  if (loading) {
   return <p>Cargando...</p>;
 }
 

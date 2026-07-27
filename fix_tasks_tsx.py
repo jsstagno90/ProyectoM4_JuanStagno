@@ -1,4 +1,6 @@
-import "./Tasks.css";
+from pathlib import Path
+
+content = '''import "./Tasks.css";
 import { useMemo, useState } from "react";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
@@ -22,10 +24,10 @@ function Tasks() {
 
     const filtered = normalizedQuery
       ? tasks.filter((task) => {
-        const title = task.title.toLowerCase();
-        const description = task.description.toLowerCase();
-        return title.includes(normalizedQuery) || description.includes(normalizedQuery);
-      })
+          const title = task.title.toLowerCase();
+          const description = task.description.toLowerCase();
+          return title.includes(normalizedQuery) || description.includes(normalizedQuery);
+        })
       : [...tasks];
 
     const getTime = (taskDate: any) => {
@@ -96,15 +98,10 @@ function Tasks() {
         </div>
 
         <TaskList
-          tasks={tasks}
+          tasks={filteredTasks}
           onDelete={deleteTask}
           onToggleCompleted={toggleTaskCompleted}
-          onUpdate={(id, title, description) =>
-            updateTask(id, {
-              title,
-              description,
-            })
-          }
+          onUpdate={updateTask}
         />
       </div>
     </div>
@@ -112,3 +109,7 @@ function Tasks() {
 }
 
 export default Tasks;
+'''
+
+Path('src/pages/Tasks.tsx').write_text(content, encoding='utf-8')
+print('Tasks.tsx rewritten')

@@ -1,6 +1,6 @@
 import "./TaskItem.css";
 import type { Task } from "../types/task";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaCheck,
   FaEdit,
@@ -28,8 +28,26 @@ function TaskItem({
   onUpdate,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [isEntering, setIsEntering] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setIsEntering(true);
+    }, 20);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  const handleDelete = () => {
+    if (isRemoving) return;
+    setIsRemoving(true);
+    window.setTimeout(() => {
+      onDelete(task.id);
+    }, 220);
+  };
 
   if (isEditing) {
     return (
@@ -98,7 +116,7 @@ function TaskItem({
   };
 
   return (
-    <div className="task-card">
+    <div className={`task-card${isEntering ? " entering" : ""}${isRemoving ? " removing" : ""}`}>
       <div className="task-card-header">
         <h3 className={task.completed ? "completed-title" : ""}>
           {task.title}
@@ -133,6 +151,7 @@ function TaskItem({
               task.completed
             )
           }
+          disabled={isRemoving}
         >
           {task.completed ? <FaUndo /> : <FaCheck />}
           {task.completed ? " Pendiente" : " Completar"}
@@ -141,6 +160,7 @@ function TaskItem({
         <button
           className="task-btn edit-btn"
           onClick={() => setIsEditing(true)}
+          disabled={isRemoving}
         >
           <FaEdit />
           Editar
@@ -148,7 +168,8 @@ function TaskItem({
 
         <button
           className="task-btn delete-btn"
-          onClick={() => onDelete(task.id)}
+          onClick={handleDelete}
+          disabled={isRemoving}
         >
           <FaTrash />
           Eliminar

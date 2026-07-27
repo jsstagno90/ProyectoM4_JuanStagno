@@ -4,6 +4,43 @@
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.task-card.entering {
+  animation: taskEnter 240ms ease forwards;
+}
+
+.task-card.removing {
+  animation: taskExit 200ms ease forwards;
+}
+
+@keyframes taskEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes taskExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+    height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 .task-card h3 {

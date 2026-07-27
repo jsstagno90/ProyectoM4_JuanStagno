@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
@@ -16,7 +16,7 @@ function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/login" element={<Login />} />
-
+        <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/register" element={<Register />} />
 
         <Route

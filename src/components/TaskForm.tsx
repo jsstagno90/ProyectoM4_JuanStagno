@@ -9,12 +9,19 @@ interface TaskFormProps {
 function TaskForm({ onCreateTask }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!title.trim()) {
+      setError("Por favor introduzca un título");
+      return;
+    }
+
+    setError("");
     await onCreateTask({
-      title,
+      title: title.trim(),
       description,
     });
 
@@ -34,6 +41,7 @@ function TaskForm({ onCreateTask }: TaskFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        {error && <p className="task-error">{error}</p>}
       </div>
 
       <div>

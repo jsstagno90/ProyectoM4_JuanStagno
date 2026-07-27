@@ -31,8 +31,6 @@ export async function createTask(newTask: NewTask) {
 }
 
 export async function getTasks(): Promise<Task[]> {
-  console.log("auth.currentUser:", auth.currentUser);
-
   const user = auth.currentUser;
 
   if (!user) {
