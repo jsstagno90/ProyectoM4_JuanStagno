@@ -1,85 +1,161 @@
+import "./TaskItem.css";
 import type { Task } from "../types/task";
 import { useState } from "react";
+import {
+  FaCheck,
+  FaEdit,
+  FaTrash,
+  FaSave,
+  FaTimes,
+  FaUndo,
+} from "react-icons/fa";
 
 interface TaskItemProps {
-    task: Task;
-    onDelete: (id: string) => void;
-    onToggleCompleted: (id: string, completed: boolean) => void;
-    onUpdate: (
-        id: string,
-        title: string,
-        description: string
-    ) => void;
+  task: Task;
+  onDelete: (id: string) => void;
+  onToggleCompleted: (id: string, completed: boolean) => void;
+  onUpdate: (
+    id: string,
+    title: string,
+    description: string
+  ) => void;
 }
 
-function TaskItem({ task, onDelete, onToggleCompleted, onUpdate }: TaskItemProps) {
+function TaskItem({
+  task,
+  onDelete,
+  onToggleCompleted,
+  onUpdate,
+}: TaskItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description);
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [title, setTitle] = useState(task.title);
-    const [description, setDescription] = useState(task.description);
-    if (isEditing) {
-        return (
-            <div>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-
-                <br />
-
-                <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-
-                <br />
-
-                <button
-                    onClick={() => {
-                        onUpdate(task.id, title, description);
-                        setIsEditing(false);
-                    }}
-                >
-                    Guardar
-                </button>
-
-                <button onClick={() => setIsEditing(false)}>
-                    Cancelar
-                </button>
-
-                <hr />
-            </div>
-        );
-    }
+  if (isEditing) {
     return (
-        <div>
-            <h3
-                style={{
-                    textDecoration: task.completed ? "line-through" : "none",
-                }}
-            >
-                {task.title}
-            </h3>
+      <div className="task-card">
+        <input
+          className="task-input"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
-            <p>{task.description}</p>
+        <textarea
+          className="task-textarea"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <div className="task-actions">
+          <div className="task-actions-left">
             <button
-                onClick={() =>
-                    onToggleCompleted(task.id, task.completed)
-                }
+              className="task-btn save-btn"
+              onClick={() => {
+                onUpdate(task.id, title, description);
+                setIsEditing(false);
+              }}
             >
-                {task.completed ? "Pendiente" : "Completar"}
+              <FaSave />
+              Guardar
             </button>
-            <button onClick={() => setIsEditing(true)}>
-                Editar
-            </button>
-            <button onClick={() => onDelete(task.id)}>
-                Eliminar
-            </button>
+          </div>
 
-            <hr />
+          <div className="task-actions-right">
+            <button
+              className="task-btn cancel-btn"
+              onClick={() => setIsEditing(false)}
+            >
+              <FaTimes />
+              Cancelar
+            </button>
+          </div>
         </div>
+      </div>
     );
+  }
+
+  const getFormattedDate = () => {
+    if (!task.createdAt) return "Fecha desconocida";
+
+    const date =
+      typeof task.createdAt.toDate === "function"
+        ? task.createdAt.toDate()
+        : task.createdAt instanceof Date
+        ? task.createdAt
+        : null;
+
+    if (!date) return "Fecha desconocida";
+
+    return new Intl.DateTimeFormat("es-AR", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  return (
+    <div className="task-card">
+      <div className="task-card-header">
+        <h3 className={task.completed ? "completed-title" : ""}>
+          {task.title}
+        </h3>
+        <span className="task-card-date">{getFormattedDate()}</span>
+      </div>
+
+      <p>{task.description}</p>
+
+      <div className="task-status-row">
+        <span
+          className={
+            task.completed
+              ? "completed-badge"
+              : "pending-badge"
+          }
+        >
+          {task.completed ? "Completada" : "Pendiente"}
+        </span>
+      </div>
+
+      <div className="task-actions">
+        <button
+          className={`task-btn ${
+            task.completed
+              ? "pending-btn"
+              : "complete-btn"
+          }`}
+          onClick={() =>
+            onToggleCompleted(
+              task.id,
+              task.completed
+            )
+          }
+        >
+          {task.completed ? <FaUndo /> : <FaCheck />}
+          {task.completed ? " Pendiente" : " Completar"}
+        </button>
+
+        <button
+          className="task-btn edit-btn"
+          onClick={() => setIsEditing(true)}
+        >
+          <FaEdit />
+          Editar
+        </button>
+
+        <button
+          className="task-btn delete-btn"
+          onClick={() => onDelete(task.id)}
+        >
+          <FaTrash />
+          Eliminar
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default TaskItem;

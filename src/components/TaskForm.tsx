@@ -1,3 +1,4 @@
+import "./TaskForm.css";
 import { useState } from "react";
 import type { NewTask } from "../types/task";
 
@@ -22,33 +23,35 @@ function TaskForm({ onCreateTask }: TaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="task-form" onSubmit={handleSubmit}>
       <div>
         <label>Título</label>
-        <br />
+
         <input
+          className="task-input"
           type="text"
+          placeholder="Ej: Estudiar React"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
 
-      <br />
-
       <div>
         <label>Descripción</label>
-        <br />
+
         <textarea
+          className="task-textarea"
+          placeholder="Describe la tarea..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
 
-      <br />
-
-      <button type="submit">Crear tarea</button>
+      <button className="primary-btn" type="submit">
+        Crear tarea
+      </button>
     </form>
   );
 }
 
-export default TaskForm;
+export default TaskForm;  
