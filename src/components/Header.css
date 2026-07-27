@@ -62,3 +62,58 @@
 .logout-btn:hover {
   transform: translateY(-2px);
 }
+
+@media (max-width: 780px) {
+  .header {
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 10px;
+    height: auto;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+    gap: 8px;
+  }
+
+  .nav {
+    gap: 10px;
+    justify-content: flex-end;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .nav a,
+  .logout-btn {
+    padding: 8px 12px;
+    min-width: auto;
+    font-size: 0.95rem;
+  }
+
+  .logout-btn {
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    justify-content: center;
+  }
+
+  .logo {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .nav {
+    justify-content: center;
+  }
+
+  .nav a,
+  .logout-btn {
+    width: auto;
+    flex: 1 1 auto;
+  }
+}
