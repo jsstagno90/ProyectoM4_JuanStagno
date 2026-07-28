@@ -12,7 +12,7 @@ interface TaskListProps {
         id: string,
         title: string,
         description: string
-    ) => void;
+    ) => Promise<void>;
 }
 
 function TaskList({ tasks, onDelete, onToggleCompleted, onUpdate }: TaskListProps) {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Timestamp } from "firebase/firestore";
 import type { NewTask, Task } from "../types/task";
 import {
   createTask as createTaskService,
@@ -50,10 +51,26 @@ export function useTasks() {
 
   const createTask = useCallback(
     async (newTask: NewTask) => {
-      await createTaskService(newTask);
-      await refreshTasks();
+      const optimisticTask: Task = {
+        id: `temp-${Date.now()}`,
+        title: newTask.title,
+        description: newTask.description,
+        completed: false,
+        userId: user?.uid ?? "",
+        createdAt: Timestamp.now(),
+      };
+
+      setTasks((prev) => [optimisticTask, ...prev]);
+
+      try {
+        await createTaskService(newTask);
+        await refreshTasks();
+      } catch (err) {
+        setTasks((prev) => prev.filter((task) => task.id !== optimisticTask.id));
+        throw err;
+      }
     },
-    [refreshTasks]
+    [refreshTasks, user?.uid]
   );
 
   const deleteTask = useCallback(
@@ -74,10 +91,23 @@ export function useTasks() {
 
   const updateTask = useCallback(
     async (id: string, updatedData: Partial<Task>) => {
-      await updateTaskService(id, updatedData);
-      await refreshTasks();
+      const previousTasks = [...tasks];
+
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === id ? { ...task, ...updatedData } : task
+        )
+      );
+
+      try {
+        await updateTaskService(id, updatedData);
+        await refreshTasks();
+      } catch (err) {
+        setTasks(previousTasks);
+        throw err;
+      }
     },
-    [refreshTasks]
+    [refreshTasks, tasks]
   );
 
   return {

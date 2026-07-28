@@ -10,6 +10,7 @@ function TaskForm({ onCreateTask }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,13 +21,21 @@ function TaskForm({ onCreateTask }: TaskFormProps) {
     }
 
     setError("");
-    await onCreateTask({
-      title: title.trim(),
-      description,
-    });
+    setIsSubmitting(true);
 
-    setTitle("");
-    setDescription("");
+    try {
+      await onCreateTask({
+        title: title.trim(),
+        description,
+      });
+
+      setTitle("");
+      setDescription("");
+    } catch {
+      setError("No se pudo crear la tarea. Inténtalo de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -55,9 +64,10 @@ function TaskForm({ onCreateTask }: TaskFormProps) {
         />
       </div>
 
-      <button className="primary-btn" type="submit">
-        Crear tarea
+      <button className="primary-btn" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Creando tarea..." : "Crear tarea"}
       </button>
+      {isSubmitting && <p className="task-status-message">Creando tarea...</p>}
     </form>
   );
 }

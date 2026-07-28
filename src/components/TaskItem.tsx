@@ -18,7 +18,7 @@ interface TaskItemProps {
     id: string,
     title: string,
     description: string
-  ) => void;
+  ) => Promise<void>;
 }
 
 function TaskItem({
@@ -33,6 +33,7 @@ function TaskItem({
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -42,6 +43,11 @@ function TaskItem({
     return () => window.clearTimeout(timeoutId);
   }, []);
 
+  useEffect(() => {
+    setTitle(task.title);
+    setDescription(task.description);
+  }, [task.title, task.description]);
+
   const handleDelete = () => {
     if (isRemoving) return;
     setIsRemoving(true);
@@ -50,18 +56,26 @@ function TaskItem({
     }, 220);
   };
 
-  if (isEditing) {
-    const handleSave = () => {
-      if (!title.trim()) {
-        setError("Por favor introduzca un título");
-        return;
-      }
+  const handleSave = async () => {
+    if (!title.trim()) {
+      setError("Por favor introduzca un título");
+      return;
+    }
 
-      setError("");
-      onUpdate(task.id, title.trim(), description.trim());
+    setError("");
+    setIsSaving(true);
+
+    try {
+      await onUpdate(task.id, title.trim(), description.trim());
       setIsEditing(false);
-    };
+    } catch {
+      setError("No se pudo guardar la tarea. Inténtalo de nuevo.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
+  if (isEditing) {
     return (
       <div className="task-card entering">
         <input
@@ -84,7 +98,11 @@ function TaskItem({
 
         <div className="task-actions">
           <div className="task-actions-left">
-            <button className="task-btn save-btn" onClick={handleSave}>
+            <button
+              className="task-btn save-btn"
+              onClick={handleSave}
+              disabled={isSaving || isRemoving}
+            >
               <FaSave />
               Guardar
             </button>
@@ -94,12 +112,14 @@ function TaskItem({
             <button
               className="task-btn cancel-btn"
               onClick={() => setIsEditing(false)}
+              disabled={isSaving || isRemoving}
             >
               <FaTimes />
               Cancelar
             </button>
           </div>
         </div>
+        {isSaving && <p className="task-status-message">Guardando cambios...</p>}
       </div>
     );
   }
