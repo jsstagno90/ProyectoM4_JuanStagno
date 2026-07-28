@@ -53,6 +53,48 @@ it("llama a onToggleCompleted al hacer clic en Completar", async () => {
   expect(onToggleCompleted).toHaveBeenCalledWith("1", false);
 });
 
+it("muestra el formulario de edición con la tarjeta visible al entrar en modo edición", async () => {
+  const user = userEvent.setup();
+
+  render(
+    <TaskItem
+      task={task}
+      onDelete={vi.fn()}
+      onToggleCompleted={vi.fn()}
+      onUpdate={vi.fn()}
+    />
+  );
+
+  await user.click(screen.getByRole("button", { name: /editar/i }));
+
+  const editCard = screen.getByDisplayValue("Aprender Testing").closest(".task-card");
+
+  expect(editCard).toHaveClass("entering");
+});
+
+it("muestra un mensaje y no guarda si el título queda vacío al editar", async () => {
+  const user = userEvent.setup();
+  const onUpdate = vi.fn();
+
+  render(
+    <TaskItem
+      task={task}
+      onDelete={vi.fn()}
+      onToggleCompleted={vi.fn()}
+      onUpdate={onUpdate}
+    />
+  );
+
+  await user.click(screen.getByRole("button", { name: /editar/i }));
+
+  const titleInput = screen.getByDisplayValue("Aprender Testing");
+  await user.clear(titleInput);
+  await user.click(screen.getByRole("button", { name: /guardar/i }));
+
+  expect(screen.getByText("Por favor introduzca un título")).toBeInTheDocument();
+  expect(onUpdate).not.toHaveBeenCalled();
+});
+
 it("permite editar una tarea y guardarla", async () => {
   const user = userEvent.setup();
 

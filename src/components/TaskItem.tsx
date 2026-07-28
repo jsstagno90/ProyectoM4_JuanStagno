@@ -32,6 +32,7 @@ function TaskItem({
   const [isEntering, setIsEntering] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -50,14 +51,30 @@ function TaskItem({
   };
 
   if (isEditing) {
+    const handleSave = () => {
+      if (!title.trim()) {
+        setError("Por favor introduzca un título");
+        return;
+      }
+
+      setError("");
+      onUpdate(task.id, title.trim(), description.trim());
+      setIsEditing(false);
+    };
+
     return (
-      <div className="task-card">
+      <div className="task-card entering">
         <input
           className="task-input"
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (error) setError("");
+          }}
         />
+
+        {error && <p className="task-error">{error}</p>}
 
         <textarea
           className="task-textarea"
@@ -67,13 +84,7 @@ function TaskItem({
 
         <div className="task-actions">
           <div className="task-actions-left">
-            <button
-              className="task-btn save-btn"
-              onClick={() => {
-                onUpdate(task.id, title, description);
-                setIsEditing(false);
-              }}
-            >
+            <button className="task-btn save-btn" onClick={handleSave}>
               <FaSave />
               Guardar
             </button>

@@ -22,14 +22,6 @@ function Tasks() {
   const filteredTasks = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    const filtered = normalizedQuery
-      ? tasks.filter((task) => {
-        const title = task.title.toLowerCase();
-        const description = task.description.toLowerCase();
-        return title.includes(normalizedQuery) || description.includes(normalizedQuery);
-      })
-      : [...tasks];
-
     const getTime = (taskDate: Timestamp | Date | null | undefined) => {
       if (!taskDate) return 0;
 
@@ -40,21 +32,71 @@ function Tasks() {
       return taskDate.toDate().getTime();
     };
 
-    return filtered.sort((a, b) => {
-      if (sortOption === "oldest") {
-        return getTime(a.createdAt) - getTime(b.createdAt);
+    const scoredTasks = tasks.map((task) => {
+      const title = task.title.toLowerCase();
+      const description = task.description.toLowerCase();
+
+      if (!normalizedQuery) {
+        return { task, score: 0 };
       }
 
-      if (sortOption === "completed") {
-        return Number(b.completed) - Number(a.completed) || getTime(b.createdAt) - getTime(a.createdAt);
-      }
+      const titleIndex = title.indexOf(normalizedQuery);
+      const descriptionIndex = description.indexOf(normalizedQuery);
+      const matchesTitle = titleIndex >= 0;
+      const matchesDescription = descriptionIndex >= 0;
 
-      if (sortOption === "pending") {
-        return Number(a.completed) - Number(b.completed) || getTime(b.createdAt) - getTime(a.createdAt);
-      }
+      let score = 0;
 
-      return getTime(b.createdAt) - getTime(a.createdAt);
+      if (matchesTitle) score += 100;
+      if (matchesDescription) score += 20;
+      if (matchesTitle && titleIndex === 0) score += 30;
+      if (matchesDescription && descriptionIndex === 0) score += 10;
+
+      return { task, score: matchesTitle || matchesDescription ? score : -1 };
     });
+
+    const filtered = scoredTasks
+      .filter(({ score }) => score >= 0)
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+
+        if (sortOption === "oldest") {
+          return getTime(a.task.createdAt) - getTime(b.task.createdAt);
+        }
+
+        if (sortOption === "completed") {
+          return Number(b.task.completed) - Number(a.task.completed) || getTime(b.task.createdAt) - getTime(a.task.createdAt);
+        }
+
+        if (sortOption === "pending") {
+          return Number(a.task.completed) - Number(b.task.completed) || getTime(b.task.createdAt) - getTime(a.task.createdAt);
+        }
+
+        return getTime(b.task.createdAt) - getTime(a.task.createdAt);
+      })
+      .map(({ task }) => task);
+
+    if (!normalizedQuery) {
+      return filtered.sort((a, b) => {
+        if (sortOption === "oldest") {
+          return getTime(a.createdAt) - getTime(b.createdAt);
+        }
+
+        if (sortOption === "completed") {
+          return Number(b.completed) - Number(a.completed) || getTime(b.createdAt) - getTime(a.createdAt);
+        }
+
+        if (sortOption === "pending") {
+          return Number(a.completed) - Number(b.completed) || getTime(b.createdAt) - getTime(a.createdAt);
+        }
+
+        return getTime(b.createdAt) - getTime(a.createdAt);
+      });
+    }
+
+    return filtered;
   }, [query, sortOption, tasks]);
 
   return (
@@ -70,7 +112,7 @@ function Tasks() {
           <div>
             <h2>📌 Mis tareas</h2>
             <p className="task-search-info">
-              {filteredTasks.length} tarea{filteredTasks.length === 1 ? "" : "s"} encontrada{filteredTasks.length === 1 ? "" : "s"}
+              {filteredTasks.length} tarea{filteredTasks.length === 1 ? "" : "s"} encontrada{filteredTasks.length === 1 ? "" : "s"} · {filteredTasks.filter((task) => !task.completed).length} pendiente{filteredTasks.filter((task) => !task.completed).length === 1 ? "" : "s"} · {filteredTasks.filter((task) => task.completed).length} completada{filteredTasks.filter((task) => task.completed).length === 1 ? "" : "s"}
             </p>
             {loading && <p>Cargando tareas...</p>}
             {error && <p className="task-error">{error}</p>}
@@ -100,7 +142,7 @@ function Tasks() {
         </div>
 
         <TaskList
-          tasks={tasks}
+          tasks={filteredTasks}
           onDelete={deleteTask}
           onToggleCompleted={toggleTaskCompleted}
           onUpdate={(id, title, description) =>
