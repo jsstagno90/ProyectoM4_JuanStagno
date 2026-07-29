@@ -7,7 +7,6 @@ import { useAuth } from "../hooks/useAuth";
 import type { Timestamp } from "firebase/firestore";
 import {
   getActivitySummary,
-  incrementActivitySummary,
   resetActivitySummary,
 } from "../utils/activitySummary";
 
