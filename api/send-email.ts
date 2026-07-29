@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import process from "node:process";
 
 const ses = new SESClient({
     region: process.env.AWS_REGION,
@@ -43,6 +44,11 @@ export default async function handler(
                 },
             },
         });
+        console.log({
+            from: process.env.SES_FROM_EMAIL,
+            to,
+            subject,
+        });
 
         await ses.send(command);
 
@@ -51,13 +57,13 @@ export default async function handler(
             message: "Correo enviado correctamente",
         });
     } catch (error) {
-  console.error("AWS SES Error:", error);
+        console.error("AWS SES Error:", error);
 
-  return res.status(500).json({
-    success: false,
-    message: error instanceof Error ? error.message : String(error),
-  });
-}
+        return res.status(500).json({
+            success: false,
+            message: error instanceof Error ? error.message : String(error),
+        });
+    }
 }
 
 
