@@ -51,13 +51,13 @@ export default async function handler(
             message: "Correo enviado correctamente",
         });
     } catch (error) {
-        console.error(error);
+  console.error("AWS SES Error:", error);
 
-        return res.status(500).json({
-            success: false,
-            message: "Error al enviar el correo",
-        });
-    }
+  return res.status(500).json({
+    success: false,
+    message: error instanceof Error ? error.message : String(error),
+  });
+}
 }
 
 
