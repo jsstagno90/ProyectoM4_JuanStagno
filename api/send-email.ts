@@ -28,6 +28,9 @@ export default async function handler(
         });
     }
     try {
+        console.log("AWS REGION:", process.env.AWS_REGION);
+        console.log("FROM:", process.env.SES_FROM_EMAIL);
+        console.log("TO:", to);
         const command = new SendEmailCommand({
             Source: process.env.SES_FROM_EMAIL!,
             Destination: {
