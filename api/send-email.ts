@@ -50,7 +50,11 @@ export default async function handler(
             subject,
         });
 
-        await ses.send(command);
+        const result = await ses.send(command);
+
+        console.log("===== SES RESULT =====");
+        console.log(result);
+        console.log("MessageId:", result.MessageId);
 
         return res.status(200).json({
             success: true,
