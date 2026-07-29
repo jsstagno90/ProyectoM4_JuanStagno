@@ -142,12 +142,14 @@ function Tasks() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          
         },
         body: JSON.stringify({
           to: user.email,
           subject: "Resumen de actividad",
           message,
         }),
+        console.log("Enviando resumen a:", user.email);
       });
 
       const data = await response.json();
