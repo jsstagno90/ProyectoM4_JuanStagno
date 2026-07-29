@@ -8,6 +8,7 @@ import {
   toggleTaskCompleted as toggleTaskCompletedService,
   updateTask as updateTaskService,
 } from "../services/taskService";
+import { incrementActivitySummary } from "../utils/activitySummary";
 import { useAuth } from "./useAuth";
 
 export function useTasks() {
@@ -64,6 +65,7 @@ export function useTasks() {
 
       try {
         await createTaskService(newTask);
+        incrementActivitySummary("created");
         await refreshTasks();
       } catch (err) {
         setTasks((prev) => prev.filter((task) => task.id !== optimisticTask.id));
@@ -76,6 +78,7 @@ export function useTasks() {
   const deleteTask = useCallback(
     async (id: string) => {
       await deleteTaskService(id);
+      incrementActivitySummary("deleted");
       await refreshTasks();
     },
     [refreshTasks]
@@ -84,6 +87,9 @@ export function useTasks() {
   const toggleTaskCompleted = useCallback(
     async (id: string, completed: boolean) => {
       await toggleTaskCompletedService(id, completed);
+      if (!completed) {
+        incrementActivitySummary("completed");
+      }
       await refreshTasks();
     },
     [refreshTasks]

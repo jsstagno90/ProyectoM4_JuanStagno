@@ -3,12 +3,20 @@ import { useMemo, useState } from "react";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import { useTasks } from "../hooks/useTasks";
+import { useAuth } from "../hooks/useAuth";
 import type { Timestamp } from "firebase/firestore";
-
+import {
+  getActivitySummary,
+  incrementActivitySummary,
+  resetActivitySummary,
+} from "../utils/activitySummary";
 
 function Tasks() {
   const [query, setQuery] = useState("");
   const [sortOption, setSortOption] = useState("recent");
+  const [summaryStatus, setSummaryStatus] = useState<string | null>(null);
+  const [isSendingSummary, setIsSendingSummary] = useState(false);
+  const { user } = useAuth();
   const {
     tasks,
     loading,
@@ -99,6 +107,66 @@ function Tasks() {
     return filtered;
   }, [query, sortOption, tasks]);
 
+  const handleSendSummary = async () => {
+    if (!user?.email) {
+      setSummaryStatus("No se encontró un correo del usuario autenticado.");
+      return;
+    }
+
+    setIsSendingSummary(true);
+    setSummaryStatus(null);
+
+    try {
+      const summary = getActivitySummary();
+      const now = new Date();
+      const formattedDate = now.toLocaleString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const message = [
+        "Resumen de actividad",
+        "",
+        "Desde el último resumen enviado:",
+        `✅ Tareas creadas: ${summary.created}`,
+        `✔️ Tareas completadas: ${summary.completed}`,
+        `🗑️ Tareas eliminadas: ${summary.deleted}`,
+        "",
+        "Fecha del resumen:",
+        formattedDate,
+      ].join("\n");
+
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: user.email,
+          subject: "Resumen de actividad",
+          message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "No se pudo enviar el resumen.");
+      }
+
+      resetActivitySummary();
+      setSummaryStatus("Resumen enviado correctamente.");
+    } catch (error) {
+      console.error(error);
+      setSummaryStatus("No se pudo enviar el resumen.");
+    } finally {
+      setIsSendingSummary(false);
+    }
+  };
+
   return (
     <div className="tasks-page">
       <div className="task-form-card">
@@ -109,6 +177,21 @@ function Tasks() {
 
       <div className="task-list-card">
         <div className="task-list-header">
+          <div className="task-list-actions">
+            <button
+              className="primary-btn"
+              type="button"
+              onClick={handleSendSummary}
+              disabled={isSendingSummary}
+            >
+              {isSendingSummary ? "Enviando..." : "📧 Resumen por correo"}
+            </button>
+            {summaryStatus && (
+              <p className={summaryStatus.includes("correctamente") ? "task-success" : "task-error"}>
+                {summaryStatus}
+              </p>
+            )}
+          </div>
           <div>
             <h2>📌 Mis tareas</h2>
             <p className="task-search-info">
